@@ -37,6 +37,15 @@ def main() -> None:
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8") as f:
         f.write(ENTRY)
+    # Re-read self-check: verify the bytes on disk match the constant
+    # exactly, so a truncated or altered write cannot slip through.
+    import sys
+
+    with open("/output/entry.txt", "r", encoding="utf-8") as f:
+        written = f.read()
+    if written != ENTRY:
+        print("ERROR: /output/entry.txt does not match ENTRY", file=sys.stderr)
+        raise SystemExit(1)
     print(f"Wrote {len(ENTRY)} characters to /output/entry.txt")
     print(ENTRY)
 
